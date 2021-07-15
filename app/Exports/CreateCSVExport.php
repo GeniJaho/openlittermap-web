@@ -660,11 +660,19 @@ class CreateCSVExport implements FromQuery, WithMapping, WithHeadings
                     ]);
             }
 
-            else
+            else if ($this->location_type === 'country')
             {
                 return Photo::with(['smoking', 'food', 'coffee', 'alcohol', 'softdrinks', 'other', 'sanitary', 'brands', 'dumping', 'industrial', 'art'])
                     ->where([
                         'country_id' => $this->location_id,
+                        'verified' => 2
+                    ]);
+            }
+
+            else
+            {
+                return Photo::with(['smoking', 'food', 'coffee', 'alcohol', 'softdrinks', 'other', 'sanitary', 'brands', 'dumping', 'industrial', 'art'])
+                    ->where([
                         'verified' => 2
                     ]);
             }

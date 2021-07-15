@@ -9,7 +9,10 @@ use App\Models\Location\Country;
 use App\Models\Location\State;
 use App\Models\Location\City;
 
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DownloadControllerNew extends Controller
 {
@@ -64,24 +67,44 @@ class DownloadControllerNew extends Controller
                     $location_id = $country->id;
                 }
             }
+            else
+            {
+                $path = $year.'/'.$month.'/'.$day.'/' . 'Global_OpenLitterMap.csv';
+            }
 
-            /* Dispatch job to create CSV file for export */
-            (new CreateCSVExport($request->type, $location_id))
-                ->queue($path, 's3', null, ['visibility' => 'public'])
-                ->chain([
-                    // These jobs are executed when above is finished.
-                    new EmailUserExportCompleted($email, $path)
-                    // new ....job
-                ]);
+            $this->export($request->type, $location_id, $path, $email);
 
             return ['success' => true];
         }
 
-        catch (\Exception $e)
+        catch (Exception $e)
         {
-            \Log::info(['download failed', $e->getMessage()]);
+            Log::info(['download failed', $e->getMessage()]);
 
             return ['success' => false];
         }
+    }
+
+    /**
+     * @param string $type
+     * @param int $locationId
+     * @param string $path
+     * @param string $email
+     */
+    protected function export(string $type, int $locationId, string $path, string $email): void
+    {
+        $disk = 's3';
+
+        if (Storage::disk($disk)->exists($path)) {
+            $this->dispatch(new EmailUserExportCompleted($email, $path));
+            return;
+        }
+
+        /* Dispatch job to create CSV file for export */
+        (new CreateCSVExport($type, $locationId))
+            ->queue($path, $disk, null, ['visibility' => 'public'])
+            ->chain([
+                new EmailUserExportCompleted($email, $path)
+            ]);
     }
 }
