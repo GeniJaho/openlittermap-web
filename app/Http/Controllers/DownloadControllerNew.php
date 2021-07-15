@@ -64,6 +64,10 @@ class DownloadControllerNew extends Controller
                     $location_id = $country->id;
                 }
             }
+            else
+            {
+                $path .= 'World_OpenLitterMap.csv';
+            }
 
             /* Dispatch job to create CSV file for export */
             (new CreateCSVExport($request->type, $location_id))
