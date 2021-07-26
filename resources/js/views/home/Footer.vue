@@ -40,12 +40,14 @@
 
                     <p class="footer-text mb1">{{ $t('home.footer.need-your-help') }}.</p>
 
-                    <img
-                        v-for="s in socials"
-                        :src="icon(s.icon)"
-                        @click="open(s.url)"
-                        class="footer-icon"
-                    />
+                    <div class="flex">
+                        <img
+                            v-for="s in socials"
+                            :src="icon(s.icon)"
+                            @click="open(s.url)"
+                            class="footer-icon"
+                        />
+                    </div>
                     <br>
                 </div>
 

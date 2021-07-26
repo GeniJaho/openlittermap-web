@@ -52,21 +52,21 @@
         </section>
 
         <!-- 1. Just take a photo -->
-        <div class="has-text-centered pt3">
-            <h1 class="title is-1">1. {{ $t('home.about.about9a') }}</h1>
+        <div class="flex flex-col items-center pt3">
+            <h1 class="title is-1 text-center">1. {{ $t('home.about.about9a') }}</h1>
 
             <img src="/assets/about/iphone.PNG" />
         </div>
 
         <!-- 2. Tag it with our app -->
-        <div class="has-text-centered pt3">
+        <div class="flex flex-col items-center pt3">
             <h1 class="title is-1">2. {{ $t('home.about.about9b') }}</h1>
 
             <img src="/assets/about/facemask-tag.PNG" />
         </div>
 
         <!-- 3. Upload it -->
-        <div class="has-text-centered pt3">
+        <div class="flex flex-col items-center pt3">
             <h1 class="title is-1">3. {{ $t('home.about.about9c') }}</h1>
 
             <img src="/assets/about/facemask-map.PNG" />
@@ -192,7 +192,7 @@
             <br>
         </div>
 
-        <div class="container" style="padding-bottom:5em; text-align: center;">
+        <div class="container flex flex-col items-center" style="padding-bottom:5em; text-align: center;">
             <img src="/assets/marinelitter.jpg" />
             <p style="padding-bottom: 3em;">Dublin, Ireland.</p>
             <h1 class="title is-1" style="color: black; text-align: center;">
@@ -213,7 +213,7 @@
         <img src="/assets/urban.JPG" style="padding-bottom: 1em;">
         <p style="padding-bottom: 5em; text-align: center;">Penrose Wharf, Cork City, Ireland (above)</p>
 
-        <div style="text-align: center;">
+        <div style="text-align: center;" class="flex flex-col items-center">
             <img src="/assets/IMG_0554.JPG" style="padding-bottom: 2em;">
             <p style="padding-bottom: 5em; text-align: center;">Accra, Capital of Ghana, North-Western Coast of Africa <a href="https://www.facebook.com/nshorena/posts/1652239435009949">more photos on facebook</a></p>
             <img src="/assets/IMG_0556.JPG" style="padding-bottom: 2em;">
