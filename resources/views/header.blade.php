@@ -19,6 +19,9 @@
         }
     </script>
     <title>OpenLitterMap</title>
+
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
     <!-- Font & icons -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <!-- Animate -->
@@ -57,4 +60,6 @@
 
         @media (max-width: 1024px) { #welcome { font-size: 60px; } }
     </style>
+
+
 </head>
