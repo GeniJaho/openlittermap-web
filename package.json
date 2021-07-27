@@ -11,6 +11,8 @@
         "lint": "eslint resources/**/*.{js,vue}"
     },
     "devDependencies": {
+        "@tailwindcss/aspect-ratio": "^0.2.1",
+        "@tailwindcss/forms": "^0.3.3",
         "autoprefixer": "^9.8.6",
         "axios": "^0.21",
         "cross-env": "^7.0",

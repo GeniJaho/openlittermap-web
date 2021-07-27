@@ -1,152 +1,166 @@
 <template>
-    <section class="hero fullheight is-primary is-bold tag-container">
+    <div>
+        <div class="min-h-screen bg-gray-100">
+            <div class="py-6">
 
-        <loading v-if="loading" v-model:active="loading" :is-full-page="true" />
+                <loading v-if="loading" v-model:active="loading" :is-full-page="true"/>
 
-        <div v-else class="pt2">
-            <!-- No Image available for tagging -->
-            <div v-if="photos.length === 0" class="hero-body">
-                <div class="container has-text-centered">
-                    <h3 class="subtitle is-1">
-                        {{ $t('tags.no-tags') }}
-                    </h3>
-                    <h3 class="subtitle button is-medium is-info hov">
-                        <router-link to="/submit">
-                            {{ $t('tags.please-upload') }}
-                        </router-link>
-                    </h3>
-                </div>
-            </div>
+                <div v-else>
+                    <!-- No Image available for tagging -->
+                    <div v-if="photos.length === 0" class="hero-body">
+                        <div class="container has-text-centered">
+                            <h3 class="subtitle is-1">
+                                {{ $t('tags.no-tags') }}
+                            </h3>
+                            <h3 class="subtitle button is-medium is-info hov">
+                                <router-link to="/submit">
+                                    {{ $t('tags.please-upload') }}
+                                </router-link>
+                            </h3>
+                        </div>
+                    </div>
 
-            <!-- Image is available for tagging -->
-            <div v-else>
-                <div v-for="photo in photos" :key="photo.id" class="mb2">
-                    <h2 class="taken">
-                        <strong style="color: #fff;">#{{ photo.id }}</strong>
-                        <!-- was profile.profile5 "Uploaded". now "taken on" -->
-                        {{ $t('tags.taken') }}: {{ getDate(photo.datetime) }}
-                    </h2>
-
-                    <div class="columns">
-
-                        <!-- Todo - Put this into a component -->
-                        <!-- the Info box, Left -->
-                        <div id="image-metadata" class="column">
-                            <div class="box">
-
-                                <!-- Coordinates. was profile6 -->
-                                <p><strong>{{ $t('tags.coordinates') }}: </strong>{{ photo.lat }}, {{ photo.lon }}</p>
-                                <br>
-
-                                <!-- Full address. was profile7 -->
-                                <p><strong>{{ $t('tags.address') }}: </strong>{{ photo.display_name }}</p>
-                                <br>
-
-                                <!-- Presence button. was profile8 -->
-                                <div>
-                                    <strong>{{ $t('tags.picked-up-title') }}</strong>
-                                    <presence />
+                    <!-- Image is available for tagging -->
+                    <div v-else>
+                        <div v-for="photo in photos" :key="photo.id"
+                             class="max-w-3xl mx-auto sm:px-6 lg:max-w-full lg:px-16 xl:px-32 lg:grid lg:grid-cols-12 lg:gap-4 xl:gap-8"
+                        >
+                            <div class="block lg:col-span-3 xl:col-span-4">
+                                <div class="sticky top-6 p-4 xl:p-8 border-right border-gray-200 bg-white overflow-y-auto">
+                                    <div class="space-y-6">
+                                        <div>
+                                            <div class="block">
+                                                <img :src="photo.filename"
+                                                     alt="Photo"
+                                                     class="object-contain max-h-128 mx-auto rounded-lg overflow-hidden"
+                                                >
+                                            </div>
+                                            <div class="mt-4 flex items-start justify-between">
+                                                <div>
+                                                    <h2 class="text-lg font-medium text-gray-900">
+                                                        {{ $t('tags.taken') }}: {{ getDate(photo.datetime) }}
+                                                    </h2>
+                                                    <p class="text-sm font-medium text-gray-500">#{{ photo.id }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <dl class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
+                                                <div class="py-3 flex flex-wrap justify-between text-sm font-medium">
+                                                    <dt class="text-gray-500">{{ $t('tags.address') }}</dt>
+                                                    <dd class="text-gray-900">{{ photo.display_name }}</dd>
+                                                </div>
+                                                <div class="py-3 flex flex-wrap justify-between text-sm font-medium">
+                                                    <dt class="text-gray-500">{{ $t('tags.coordinates') }}</dt>
+                                                    <dd class="text-gray-900">{{ photo.lat }}, {{ photo.lon }}</dd>
+                                                </div>
+                                                <div class="py-3 flex flex-wrap justify-between text-sm font-medium">
+                                                    <dt class="text-gray-500">{{ $t('tags.device') }}</dt>
+                                                    <dd class="text-gray-900">{{ photo.model }}</dd>
+                                                </div>
+                                            </dl>
+                                        </div>
+                                    </div>
                                 </div>
-                                <br>
+                            </div>
+                            <main class="lg:col-span-6 flex flex-col justify-between">
 
-                                <!-- Model of the device -->
-                                <p><strong>{{ $t('tags.device') }}: </strong>{{ photo.model }}</p>
-                                <br>
+                                <add-tags-new class="w-full" :id="photo.id"/>
 
-                                <!-- Delete photo button -->
-                                <profile-delete :photoid="photo.id" />
+                               <div>
+                                   <!-- Previous, Next Image-->
+                                   <div class="column" style="text-align: center;">
+                                       <div class="has-text-centered mt3em">
+                                           <a
+                                               v-show="previous_page"
+                                               class="pagination-previous has-background-link has-text-white"
+                                               @click="previousImage"
+                                           >{{ $t('tags.previous') }}</a>
+                                           <a
+                                               v-show="remaining > current_page"
+                                               class="pagination-next has-background-link has-text-white"
+                                               @click="nextImage"
+                                           >{{ $t('tags.next') }}</a>
+                                       </div>
+                                   </div>
 
-                                <!-- Clear recent tags -->
-                                <div v-show="hasRecentTags">
+                                   <!-- Pagination -->
+                                   <div class="column">
+                                       <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                                           <ul class="pagination-list">
+                                               <li v-for="i in remaining" :key="i">
+                                                   <a
+                                                       :class="(i === current_page ? 'pagination-link is-current': 'pagination-link')"
+                                                       :aria-label="'page' + current_page"
+                                                       :aria-current="current_page"
+                                                       @click="goToPage(i)"
+                                                   >{{ i }}</a>
+                                               </li>
+                                           </ul>
+                                       </nav>
+                                   </div>
+                               </div>
+                            </main>
+                            <aside class="block lg:col-span-3 xl:col-span-2">
+
+                                <div class="w-full sticky top-6">
+                                    <div class="box">
+                                        <!-- was profile14, 15-->
+                                        <li class="list-group-item">
+                                            {{ $t('tags.to-tag') }}: {{ remaining }}
+                                        </li>
+                                        <li class="list-group-item">
+                                            {{ $t('tags.total-uploaded') }}: {{ user.photos_count }}
+                                        </li>
+                                    </div>
+
+                                    <submit-button :photo-id="photo.id"></submit-button>
+
+                                    <!-- Presence button. was profile8 -->
+                                    <div>
+                                        <strong>{{ $t('tags.picked-up-title') }}</strong>
+                                        <presence/>
+                                    </div>
                                     <br>
-                                    <p class="strong">{{ $t('tags.clear-tags') }}</p>
 
-                                    <button @click="clearRecentTags">{{ $t('tags.clear-tags-btn') }}</button>
+                                    <!-- Delete photo button -->
+                                    <profile-delete :photoid="photo.id"/>
+
+                                    <!-- Clear recent tags -->
+                                    <div v-show="hasRecentTags">
+                                        <br>
+                                        <p class="strong">{{ $t('tags.clear-tags') }}</p>
+
+                                        <button @click="clearRecentTags">{{ $t('tags.clear-tags-btn') }}</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div> <!-- end info box -->
 
-                        <!-- The Image, Middle -->
-                        <div class="column is-6 image-wrapper">
-                            <!-- The Image -->
-                            <div class="image-content">
-                                <img :src="photo.filename" class="img">
-                            </div>
-
-                            <!-- Add & Submit Tags -->
-                            <div class="column is-10 is-offset-1 mt-4">
-                                <add-tags :id="photo.id" />
-                            </div>
+                            </aside>
                         </div>
-
-                        <!-- Info, Tags, Right -->
-                        <div id="image-counts" class="column is-3">
-                            <div class="box">
-                                <!-- was profile14, 15-->
-                                <li class="list-group-item">
-                                    {{ $t('tags.to-tag') }}: {{ remaining }}
-                                </li>
-                                <li class="list-group-item">
-                                    {{ $t('tags.total-uploaded') }}: {{ user.photos_count }}
-                                </li>
-                            </div>
-
-                            <!-- These are the tags the user has added -->
-                            <Tags :photo-id="photo.id"/>
-                        </div>
-                    </div>
-
-                    <!-- Previous, Next Image-->
-                    <div class="column" style="text-align: center;">
-                        <div class="has-text-centered mt3em">
-                            <a
-                                v-show="previous_page"
-                                class="pagination-previous has-background-link has-text-white"
-                                @click="previousImage"
-                            >{{ $t('tags.previous') }}</a>
-                            <a
-                                v-show="remaining > current_page"
-                                class="pagination-next has-background-link has-text-white"
-                                @click="nextImage"
-                            >{{ $t('tags.next') }}</a>
-                        </div>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="column">
-                        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                            <ul class="pagination-list">
-                                <li v-for="i in remaining" :key="i">
-                                    <a
-                                        :class="(i === current_page ? 'pagination-link is-current': 'pagination-link')"
-                                        :aria-label="'page' + current_page"
-                                        :aria-current="current_page"
-                                        @click="goToPage(i)"
-                                    >{{ i }}</a>
-                                </li>
-                            </ul>
-                        </nav>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+
 </template>
 
 <script>
 import moment from 'moment';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
-import AddTags from '../../components/Litter/AddTags';
+import AddTagsNew from '../../components/Litter/AddTagsNew';
 import Presence from '../../components/Litter/Presence';
 import Tags from '../../components/Litter/Tags';
 import ProfileDelete from '../../components/Litter/ProfileDelete';
+import SubmitButton from '../../components/Litter/SubmitButton';
 
 export default {
     name: 'Tag',
     components: {
+        SubmitButton,
         Loading,
-        AddTags,
+        AddTagsNew,
         Presence,
         Tags,
         ProfileDelete
@@ -289,51 +303,47 @@ export default {
 
 <style scoped lang="scss">
 
+.tag-container {
+    padding: 0 3em;
+}
+
+.image-wrapper {
+    text-align: center;
+    .image-content {
+        position: relative;
+        display: inline-block;
+
+        .delete-img{
+            position: absolute;
+            top: -19px;
+            right: -17px;
+            font-size: 40px;
+        }
+    }
+}
+
+.taken {
+    color: #fff;
+    font-weight: 600;
+    font-size: 2.5rem;
+    line-height: 1.25;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+@media screen and (max-width: 768px)
+{
     .img {
-        max-height: 30em;
+        max-height: 15em;
     }
 
     .tag-container {
-        padding: 0 3em;
-    }
-
-    .image-wrapper {
-        text-align: center;
-        .image-content {
-            position: relative;
-            display: inline-block;
-
-            .delete-img{
-                position: absolute;
-                top: -19px;
-                right: -17px;
-                font-size: 40px;
-            }
-        }
+        padding: 0 1em;
     }
 
     .taken {
-        color: #fff;
-        font-weight: 600;
-        font-size: 2.5rem;
-        line-height: 1.25;
-        margin-bottom: 1em;
-        text-align: center;
+        display: none;
     }
-
-    @media screen and (max-width: 768px)
-    {
-        .img {
-            max-height: 15em;
-        }
-
-        .tag-container {
-            padding: 0 1em;
-        }
-
-        .taken {
-            display: none;
-        }
-    }
+}
 
 </style>
