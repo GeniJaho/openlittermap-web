@@ -95,33 +95,29 @@
             <br>
             <br>
 
-            <div v-if="Object.keys(recentTags).length > 0 && this.annotations !== true && this.id !== 0" class="mb-5">
+            <div v-if="Object.keys(recentTags).length > 0 && this.annotations !== true && this.id !== 0">
+                <RecentTags :recent-tags="recentTags" @addRecentTag="addRecentTag"></RecentTags>
+            </div>
 
-                <p class="mb-05">{{ $t('tags.recently-tags') }}</p>
-
-                <div v-for="category in Object.keys(recentTags)">
-                    <p>{{ getCategoryName(category) }}</p>
-
-                    <transition-group name="list" class="recent-tags" tag="div" :key="category">
-                        <div
-                            v-for="tag in Object.keys(recentTags[category])"
-                            class="litter-tag"
-                            :key="tag"
-                            @click="addRecentTag(category, tag)"
-                        ><p>{{ getTagName(category, tag) }}</p></div>
-                    </transition-group>
+            <div class="relative">
+                <div class="absolute inset-0 px-4 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center">
+                <span class="px-3 bg-white text-lg font-medium text-gray-900">
+                  Added tags
+                </span>
                 </div>
             </div>
 
-
-            <Tags :photo-id="this.id"/>
+            <TagsNew :photo-id="this.id"/>
 
         </div>
     </div>
 </template>
 
 <script>
-import Tags from './Tags';
+import TagsNew from './TagsNew';
 import Presence from './Presence';
 import ProfileDelete from './ProfileDelete';
 import VueSimpleSuggest from 'vue-simple-suggest';
@@ -129,12 +125,14 @@ import 'vue-simple-suggest/dist/styles.css';
 import { categories } from '../../extra/categories';
 import { litterkeys } from '../../extra/litterkeys';
 import ClickOutside from 'vue-click-outside';
+import RecentTags from './RecentTags';
 
 // When this.id === 0, we are using MyPhotos && AddManyTagsToManyPhotos
 export default {
     name: 'AddTags',
     components: {
-        Tags,
+        RecentTags,
+        TagsNew,
         Presence,
         ProfileDelete,
         VueSimpleSuggest

@@ -1,7 +1,9 @@
 <template>
     <button
+        type="button"
         :disabled="checkTags"
-        :class="button"
+        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300"
+        :class="checkTags ? 'cursor-not-allowed bg-green-300 hover:bg-green-300' : 'bg-green-400 hover:bg-green-500'"
         @click="submit"
     >{{ $t('common.submit') }}</button>
 </template>
@@ -21,7 +23,7 @@ export default {
          */
         button ()
         {
-            return 'button is-medium is-success' + (this.processing ? ' is-loading' : '');
+            return this.processing ? 'is-loading' : '';
         },
 
         /**

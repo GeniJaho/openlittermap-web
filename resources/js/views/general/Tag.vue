@@ -26,7 +26,7 @@
                              class="max-w-3xl mx-auto sm:px-6 lg:max-w-full lg:px-16 xl:px-32 lg:grid lg:grid-cols-12 lg:gap-4 xl:gap-8"
                         >
                             <div class="block lg:col-span-3 xl:col-span-4">
-                                <div class="sticky top-6 p-4 xl:p-8 border-right border-gray-200 bg-white overflow-y-auto">
+                                <div class="sticky top-6 p-4 xl:p-8 bg-white overflow-hidden shadow rounded-lg">
                                     <div class="space-y-6">
                                         <div>
                                             <div class="block">
@@ -45,7 +45,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <dl class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
+                                            <dl class="mt-2 divide-y divide-gray-200">
                                                 <div class="py-3 flex flex-wrap justify-between text-sm font-medium">
                                                     <dt class="text-gray-500">{{ $t('tags.address') }}</dt>
                                                     <dd class="text-gray-900">{{ photo.display_name }}</dd>
@@ -63,75 +63,86 @@
                                     </div>
                                 </div>
                             </div>
-                            <main class="lg:col-span-6 flex flex-col justify-between">
+                            <main class="lg:col-span-6">
 
-                                <add-tags-new class="w-full" :id="photo.id"/>
+                                <div class="bg-white overflow-hidden shadow rounded-lg flex flex-col justify-between">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <add-tags-new class="w-full" :id="photo.id"/>
+                                    </div>
+                                    <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                                        <div>
+                                            <!-- Previous, Next Image-->
+                                            <div class="column" style="text-align: center;">
+                                                <div class="has-text-centered mt3em">
+                                                    <a
+                                                        v-show="previous_page"
+                                                        class="pagination-previous has-background-link has-text-white"
+                                                        @click="previousImage"
+                                                    >{{ $t('tags.previous') }}</a>
+                                                    <a
+                                                        v-show="remaining > current_page"
+                                                        class="pagination-next has-background-link has-text-white"
+                                                        @click="nextImage"
+                                                    >{{ $t('tags.next') }}</a>
+                                                </div>
+                                            </div>
 
-                               <div>
-                                   <!-- Previous, Next Image-->
-                                   <div class="column" style="text-align: center;">
-                                       <div class="has-text-centered mt3em">
-                                           <a
-                                               v-show="previous_page"
-                                               class="pagination-previous has-background-link has-text-white"
-                                               @click="previousImage"
-                                           >{{ $t('tags.previous') }}</a>
-                                           <a
-                                               v-show="remaining > current_page"
-                                               class="pagination-next has-background-link has-text-white"
-                                               @click="nextImage"
-                                           >{{ $t('tags.next') }}</a>
-                                       </div>
-                                   </div>
-
-                                   <!-- Pagination -->
-                                   <div class="column">
-                                       <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                                           <ul class="pagination-list">
-                                               <li v-for="i in remaining" :key="i">
-                                                   <a
-                                                       :class="(i === current_page ? 'pagination-link is-current': 'pagination-link')"
-                                                       :aria-label="'page' + current_page"
-                                                       :aria-current="current_page"
-                                                       @click="goToPage(i)"
-                                                   >{{ i }}</a>
-                                               </li>
-                                           </ul>
-                                       </nav>
-                                   </div>
-                               </div>
+                                            <!-- Pagination -->
+                                            <div class="column">
+                                                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                                                    <ul class="pagination-list">
+                                                        <li v-for="i in remaining" :key="i">
+                                                            <a
+                                                                :class="(i === current_page ? 'pagination-link is-current': 'pagination-link')"
+                                                                :aria-label="'page' + current_page"
+                                                                :aria-current="current_page"
+                                                                @click="goToPage(i)"
+                                                            >{{ i }}</a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </main>
                             <aside class="block lg:col-span-3 xl:col-span-2">
 
                                 <div class="w-full sticky top-6">
-                                    <div class="box">
-                                        <!-- was profile14, 15-->
-                                        <li class="list-group-item">
-                                            {{ $t('tags.to-tag') }}: {{ remaining }}
-                                        </li>
-                                        <li class="list-group-item">
-                                            {{ $t('tags.total-uploaded') }}: {{ user.photos_count }}
-                                        </li>
-                                    </div>
+                                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                                        <div class="px-4 py-5 sm:p-6 space-y-8">
 
-                                    <submit-button :photo-id="photo.id"></submit-button>
+                                            <ul>
+                                                <li class="list-group-item">
+                                                    {{ $t('tags.to-tag') }}: {{ remaining }}
+                                                </li>
+                                                <li class="list-group-item">
+                                                    {{ $t('tags.total-uploaded') }}: {{ user.photos_count }}
+                                                </li>
+                                            </ul>
 
-                                    <!-- Presence button. was profile8 -->
-                                    <div>
-                                        <strong>{{ $t('tags.picked-up-title') }}</strong>
-                                        <presence/>
-                                    </div>
-                                    <br>
+                                            <submit-button :photo-id="photo.id"></submit-button>
 
-                                    <!-- Delete photo button -->
-                                    <profile-delete :photoid="photo.id"/>
+                                            <!-- Presence button. was profile8 -->
+                                            <div>
+                                                <strong>{{ $t('tags.picked-up-title') }}</strong>
+                                                <presence/>
+                                            </div>
 
-                                    <!-- Clear recent tags -->
-                                    <div v-show="hasRecentTags">
-                                        <br>
-                                        <p class="strong">{{ $t('tags.clear-tags') }}</p>
+                                            <!-- Delete photo button -->
+                                            <profile-delete :photoid="photo.id"/>
 
-                                        <button @click="clearRecentTags">{{ $t('tags.clear-tags-btn') }}</button>
+                                            <!-- Clear recent tags -->
+                                            <div v-show="hasRecentTags">
+                                                <button
+                                                    type="button"
+                                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                    @click="clearRecentTags"
+                                                >
+                                                    {{ $t('tags.clear-tags-btn') }}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
