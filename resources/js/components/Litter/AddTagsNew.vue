@@ -1,33 +1,26 @@
 <template>
     <div>
         <!-- Search all tags -->
-        <div class="columns">
-            <div class="column is-half is-offset-3">
-                <div class="control">
-                    <div class="select is-fullwidth">
-                        <vue-simple-suggest
-                            ref="search"
-                            display-attribute="title"
-                            value-attribute="key"
-                            :filter-by-query="true"
-                            :list="allTags"
-                            :min-length="1"
-                            :max-suggestions="0"
-                            mode="input"
-                            :styles="autoCompleteStyle"
-                            placeholder="Press Ctrl + Spacebar to Search All Tags"
-                            @focus="onFocusSearch"
-                            @select="search"
-                        />
-                    </div>
-                </div>
-            </div>
+        <div class="mb-4 sm:px-4">
+            <vue-simple-suggest
+                ref="search"
+                display-attribute="title"
+                value-attribute="key"
+                :filter-by-query="true"
+                :list="allTags"
+                :min-length="1"
+                :max-suggestions="0"
+                mode="input"
+                :styles="autoCompleteStyle"
+                placeholder="Press Ctrl + Spacebar to Search All Tags"
+                @focus="onFocusSearch"
+                @select="search"
+            />
         </div>
 
-        <div class="control has-text-centered">
-
+        <div class="mb-5 flex flex-col xl:flex-row justify-between items-center sm:px-4 xl:space-x-4 space-y-3 xl:space-y-0">
             <!-- Categories -->
-            <div class="select">
+            <div class="w-full">
                 <vue-simple-suggest
                     ref="categories"
                     display-attribute="title"
@@ -46,7 +39,7 @@
             </div>
 
             <!-- Tags per category -->
-            <div class="select">
+            <div class="w-full">
                 <vue-simple-suggest
                     ref="tags"
                     display-attribute="title"
@@ -64,55 +57,61 @@
                 />
             </div>
 
-            <!-- Quantity -->
-            <div class="select" id="int">
-                <select v-model="quantity">
-                    <option v-for="int in integers">{{ int }}</option>
-                </select>
-            </div>
+           <div class="flex space-x-3 items-center min-w-max">
+               <div>
+                   <button
+                       type="button"
+                       :disabled="checkDecr"
+                       class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                       :class="checkDecr ? 'cursor-not-allowed bg-pink-400' : 'bg-pink-600 hover:bg-pink-700 cursor-pointer'"
+                       @click="decr"
+                   >
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                           <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                       </svg>
+                   </button>
+               </div>
 
-            <br><br>
+               <!-- Quantity -->
+               <div id="int" class="inline-flex">
+                   <select v-model="quantity" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                       <option v-for="int in integers">{{ int }}</option>
+                   </select>
+               </div>
 
-            <div>
-                <button
-                    :disabled="checkDecr"
-                    class="button is-medium is-danger"
-                    @click="decr"
-                >-</button>
-
-                <button
-                    class="button is-medium is-info"
-                    @click="addTag"
-                >{{ $t('tags.add-tag') }}</button>
-
-                <button
-                    :disabled="checkIncr"
-                    class="button is-medium is-dark"
-                    @click="incr"
-                >+</button>
-            </div>
-
-            <br>
-            <br>
-
-            <div v-if="Object.keys(recentTags).length > 0 && this.annotations !== true && this.id !== 0">
-                <RecentTags :recent-tags="recentTags" @addRecentTag="addRecentTag"></RecentTags>
-            </div>
-
-            <div class="relative">
-                <div class="absolute inset-0 px-4 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-gray-300"></div>
-                </div>
-                <div class="relative flex justify-center">
-                <span class="px-3 bg-white text-lg font-medium text-gray-900">
-                  Added tags
-                </span>
-                </div>
-            </div>
-
-            <TagsNew :photo-id="this.id"/>
-
+               <div>
+                   <button
+                       type="button"
+                       :disabled="checkIncr"
+                       class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                       :class="checkIncr ? 'cursor-not-allowed bg-green-400' : 'bg-green-600 hover:bg-green-700 cursor-pointer'"
+                       @click="incr"
+                   >
+                       <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            aria-hidden="true">
+                           <path fill-rule="evenodd"
+                                 d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                 clip-rule="evenodd"/>
+                       </svg>
+                   </button>
+               </div>
+           </div>
         </div>
+
+        <div class="mb-4 flex sm:px-4">
+            <button
+                type="button"
+                class="mx-auto inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                @click="addTag"
+            >{{ $t('tags.add-tag') }}
+            </button>
+        </div>
+
+        <div v-if="Object.keys(recentTags).length > 0 && this.annotations !== true && this.id !== 0">
+            <RecentTags :recent-tags="recentTags" @addRecentTag="addRecentTag"></RecentTags>
+        </div>
+
+        <TagsNew :photo-id="this.id"/>
     </div>
 </template>
 
@@ -122,8 +121,8 @@ import Presence from './Presence';
 import ProfileDelete from './ProfileDelete';
 import VueSimpleSuggest from 'vue-simple-suggest';
 import 'vue-simple-suggest/dist/styles.css';
-import { categories } from '../../extra/categories';
-import { litterkeys } from '../../extra/litterkeys';
+import {categories} from '../../extra/categories';
+import {litterkeys} from '../../extra/litterkeys';
 import ClickOutside from 'vue-click-outside';
 import RecentTags from './RecentTags';
 
@@ -141,15 +140,13 @@ export default {
         ClickOutside
     },
     props: {
-        'id': { type: Number, required: true },
+        'id': {type: Number, required: true},
         'admin': Boolean,
-        'annotations': { type: Boolean, required: false },
-        'isVerifying': { type: Boolean, required: false }
+        'annotations': {type: Boolean, required: false},
+        'isVerifying': {type: Boolean, required: false}
     },
-    created ()
-    {
-        if (this.$localStorage.get('recentTags'))
-        {
+    created () {
+        if (this.$localStorage.get('recentTags')) {
             this.$store.commit('initRecentTags', JSON.parse(this.$localStorage.get('recentTags')));
         }
 
@@ -165,17 +162,16 @@ export default {
             this.$refs.search.input.focus();
         });
     },
-    data ()
-    {
+    data () {
         return {
             btn: 'button is-medium is-success',
             quantity: 1,
             processing: false,
-            integers: Array.from({ length: 100 }, (_, i) => i + 1),
+            integers: Array.from({length: 100}, (_, i) => i + 1),
             autoCompleteStyle: {
-                vueSimpleSuggest: 'position-relative',
+                vueSimpleSuggest: 'position-relative w-full',
                 inputWrapper: '',
-                defaultInput : 'input',
+                defaultInput: 'input bg-red-500',
                 suggestions: 'position-absolute list-group search-fixed-height',
                 suggestItem: 'list-group-item'
             }
@@ -185,8 +181,7 @@ export default {
         /**
          * Litter tags for all categories, used by the Search field
          */
-        allTags ()
-        {
+        allTags () {
             let results = [];
 
             categories.forEach(cat => {
@@ -209,8 +204,7 @@ export default {
         /**
          * Show spinner when processing
          */
-        button ()
-        {
+        button () {
             return this.processing ? this.btn + ' is-loading' : this.btn;
         },
 
@@ -223,8 +217,8 @@ export default {
             get () {
                 return {
                     key: this.$store.state.litter.category,
-                    title:  this.$i18n.t('litter.categories.' + this.$store.state.litter.category)
-                }
+                    title: this.$i18n.t('litter.categories.' + this.$store.state.litter.category)
+                };
             },
             set (cat) {
                 if (cat) {
@@ -238,8 +232,7 @@ export default {
         /**
          * Categories is imported and the key is used to return the translated title
          */
-        categories ()
-        {
+        categories () {
             return categories.map(cat => {
                 return {
                     key: cat,
@@ -251,16 +244,14 @@ export default {
         /**
          * Disable decrement if true
          */
-        checkDecr ()
-        {
+        checkDecr () {
             return this.quantity === 1;
         },
 
         /**
          * Disable increment if true
          */
-        checkIncr ()
-        {
+        checkIncr () {
             return this.quantity === 100;
         },
 
@@ -285,8 +276,7 @@ export default {
         /**
          * Disable button if true
          */
-        checkTags ()
-        {
+        checkTags () {
             if (this.processing) return true;
 
             return Object.keys(this.$store.state.litter.tags[this.id] || {}).length === 0;
@@ -295,16 +285,14 @@ export default {
         /**
          * Has the litter been picked up, or is it still there?
          */
-        presence ()
-        {
+        presence () {
             return this.$store.state.litter.presence;
         },
 
         /**
          * The most recent tags the user has applied
          */
-        recentTags ()
-        {
+        recentTags () {
             return this.$store.state.litter.recentTags;
         },
 
@@ -316,7 +304,7 @@ export default {
                 return {
                     key: this.$store.state.litter.tag,
                     title: this.$i18n.t(`litter.${this.category.key}.${this.$store.state.litter.tag}`)
-                }
+                };
             },
             set (i) {
                 if (i) {
@@ -328,8 +316,7 @@ export default {
         /**
          * Litter tags for the selected category
          */
-        tags ()
-        {
+        tags () {
             return litterkeys[this.category.key].map(tag => {
                 return {
                     key: tag,
@@ -348,14 +335,11 @@ export default {
          * Todo - Allow the user to pick their top tags in Settings and load them on this page by default
          *        (New - PopularTags, bottom-left)
          */
-        addRecentTag (category, tag)
-        {
+        addRecentTag (category, tag) {
             let quantity = 1;
 
-            if (this.$store.state.litter.tags.hasOwnProperty(category))
-            {
-                if (this.$store.state.litter.tags[category].hasOwnProperty(tag))
-                {
+            if (this.$store.state.litter.tags.hasOwnProperty(category)) {
+                if (this.$store.state.litter.tags[category].hasOwnProperty(tag)) {
                     quantity = (this.$store.state.litter.tags[category][tag] + 1);
                 }
             }
@@ -379,8 +363,7 @@ export default {
          *     }
          * }
          */
-        addTag ()
-        {
+        addTag () {
             this.$store.commit('addTag', {
                 photoId: this.id,
                 category: this.category.key,
@@ -403,8 +386,7 @@ export default {
          *
          * When we click outside, we reset it
          */
-        clickOutsideCategory ()
-        {
+        clickOutsideCategory () {
             this.$refs.categories.setText(
                 this.$i18n.t(`litter.categories.${this.category.key}`)
             );
@@ -415,50 +397,44 @@ export default {
          *
          * When we click outside, we reset it
          */
-        clickOutsideTag ()
-        {
+        clickOutsideTag () {
             this.$refs.tags.setText(
                 this.$i18n.t(`litter.${this.category.key}.${this.$store.state.litter.tag}`)
             );
         },
 
         /**
-		 * Increment the quantity
-		 */
-        incr ()
-        {
+         * Increment the quantity
+         */
+        incr () {
             this.quantity++;
         },
 
         /**
-		 * Decrement the quantity
-		 */
-        decr ()
-        {
+         * Decrement the quantity
+         */
+        decr () {
             this.quantity--;
         },
 
         /**
          * Return translated category name for recent tags
          */
-        getCategoryName (category)
-        {
+        getCategoryName (category) {
             return this.$i18n.t(`litter.categories.${category}`);
         },
 
         /**
          * Return translated litter.key name for recent tags
          */
-        getTagName (category, tag)
-        {
+        getTagName (category, tag) {
             return this.$i18n.t(`litter.${category}.${tag}`);
         },
 
         /**
          * Clear the input field to allow the user to begin typing
          */
-        onFocusSearch ()
-        {
+        onFocusSearch () {
             this.$refs.search.setText('');
         },
 
@@ -468,8 +444,7 @@ export default {
          *
          * Clear the input field to allow the user to begin typing
          */
-        onFocusCategories ()
-        {
+        onFocusCategories () {
             this.$refs.categories.suggestions = this.$refs.categories.list;
             this.$refs.categories.setText('');
         },
@@ -480,8 +455,7 @@ export default {
          *
          * Clear the input field to allow the user to begin typing
          */
-        onFocusTags ()
-        {
+        onFocusTags () {
             this.$refs.tags.suggestions = this.$refs.tags.list;
             this.$refs.tags.setText('');
         },
@@ -491,10 +465,9 @@ export default {
          *
          * An item has been selected from the list. Blur the input focus.
          */
-        onSuggestion ()
-        {
-            this.$nextTick(function() {
-                Array.prototype.forEach.call(document.getElementsByClassName('input'), function(el) {
+        onSuggestion () {
+            this.$nextTick(function () {
+                Array.prototype.forEach.call(document.getElementsByClassName('input'), function (el) {
                     el.blur();
                 });
             });
@@ -503,8 +476,7 @@ export default {
         /**
          *
          */
-        search (input)
-        {
+        search (input) {
             let searchValues = input.key.split(':');
 
             this.category = {key: searchValues[0]};
@@ -526,20 +498,16 @@ export default {
          *
          * litter/actions.js
          */
-        async submit ()
-        {
+        async submit () {
             this.processing = true;
 
             let action = '';
 
-            if (this.annotations)
-            {
+            if (this.annotations) {
                 action = this.isVerifying
                     ? 'VERIFY_BOXES'
-                    : 'ADD_BOXES_TO_IMAGE'
-            }
-            else
-            {
+                    : 'ADD_BOXES_TO_IMAGE';
+            } else {
                 action = 'ADD_TAGS_TO_IMAGE';
             }
 
@@ -553,58 +521,56 @@ export default {
 
 <style lang="scss" scoped>
 
-    @import "../../styles/variables.scss";
+@import "../../styles/variables.scss";
 
+.hide-br {
+    display: none;
+}
+
+@media (max-width: 500px) {
     .hide-br {
-        display: none;
+        display: block;
     }
+    .v-select {
+        margin-top: 10px;
+    }
+}
 
-    @media (max-width: 500px)
-    {
-        .hide-br {
-            display: block;
-        }
-        .v-select {
-            margin-top: 10px;
-        }
+@media (min-width: 768px) {
+    .show-mobile {
+        display: none !important;
     }
+}
 
-    @media (min-width: 768px)
-    {
-        .show-mobile {
-            display: none !important;
-        }
-    }
+.custom-buttons {
+    display: flex;
+    padding: 20px;
+}
 
-    .custom-buttons {
-        display: flex;
-        padding: 20px;
-    }
+.recent-tags {
+    display: flex;
+    max-width: 50em;
+    margin: auto;
+    flex-wrap: wrap;
+    overflow: auto;
+    justify-content: center;
+}
 
-    .recent-tags {
-        display: flex;
-        max-width: 50em;
-        margin: auto;
-        flex-wrap: wrap;
-        overflow: auto;
-        justify-content: center;
-    }
+.litter-tag {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: $info;
+    margin: 5px
+}
 
-    .litter-tag {
-        cursor: pointer;
-        padding: 5px;
-        border-radius: 5px;
-        background-color: $info;
-        margin: 5px
-    }
+.list-enter-active, .list-leave-active {
+    transition: all 1s;
+}
 
-    .list-enter-active, .list-leave-active {
-        transition: all 1s;
-    }
-
-    .list-enter, .list-leave-to {
-        opacity: 0;
-        transform: translateX(30px);
-    }
+.list-enter, .list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
 
 </style>

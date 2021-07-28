@@ -1,7 +1,18 @@
 <template>
     <div>
+        <div class="relative" v-if="categories.length">
+            <div class="absolute inset-0 sm:px-4 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <span class="px-3 bg-white text-lg font-medium text-gray-900">
+                  Added tags
+                </span>
+            </div>
+        </div>
+
         <!-- Tags list (only on smallest breakpoint) -->
-        <div class="sm:hidden">
+        <div v-if="categories.length" class="sm:hidden">
             <ul class="mt-3 divide-y divide-gray-100">
                 <li v-for="category in categories">
                     <div class="group flex items-center justify-between py-2 hover:bg-gray-50">
@@ -23,7 +34,7 @@
         </div>
 
         <!-- Tags list (small breakpoint and up) -->
-        <div class="hidden sm:block">
+        <div v-if="categories.length" class="hidden sm:block">
             <div class="align-middle inline-block min-w-full px-4">
                 <table class="min-w-full">
                     <tbody class="bg-white divide-y divide-gray-100">
