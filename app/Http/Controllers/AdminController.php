@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Photos\ClearTagsOfPhotoAction;
+use App\Actions\Photos\DeleteTagsFromPhotoAction;
 use App\Actions\Photos\DeletePhotoAction;
 use App\Actions\Photos\UpdateLeaderboardsFromPhotoAction;
-use Exception;
-use Illuminate\Support\Facades\Log;
 
 use App\Models\Photo;
 use App\Models\User\User;
@@ -23,8 +21,8 @@ class AdminController extends Controller
 {
     use AddTagsTrait;
 
-    /** @var ClearTagsOfPhotoAction */
-    protected $clearTagsAction;
+    /** @var DeleteTagsFromPhotoAction */
+    protected $deleteTagsAction;
     /** @var UpdateLeaderboardsFromPhotoAction */
     protected $updateLeaderboardsAction;
     /** @var DeletePhotoAction */
@@ -34,14 +32,14 @@ class AdminController extends Controller
      * Apply IsAdmin middleware to all of these routes
      */
     public function __construct (
-        ClearTagsOfPhotoAction $clearTagsAction,
+        DeleteTagsFromPhotoAction $deleteTagsAction,
         UpdateLeaderboardsFromPhotoAction $updateLeaderboardsAction,
         DeletePhotoAction $deletePhotoAction
     )
     {
         $this->middleware('admin');
 
-        $this->clearTagsAction = $clearTagsAction;
+        $this->deleteTagsAction = $deleteTagsAction;
         $this->updateLeaderboardsAction = $updateLeaderboardsAction;
         $this->deletePhotoAction = $deletePhotoAction;
     }
@@ -134,7 +132,7 @@ class AdminController extends Controller
         $photo->result_string = null;
         $photo->save();
 
-        $deletedTags = $this->clearTagsAction->run($photo);
+        $deletedTags = $this->deleteTagsAction->run($photo);
 
         $user = User::find($photo->user_id);
         $user->xp = max(0, $user->xp - $deletedTags['all']);
@@ -149,14 +147,14 @@ class AdminController extends Controller
     /**
      * Delete an image and its records
      */
-    public function destroy (Request $request)
+    public function destroy(Request $request)
     {
         $photo = Photo::findOrFail($request->photoId);
         $user = User::find($photo->user_id);
 
         $this->deletePhotoAction->run($photo);
 
-        $deletedTags = $this->clearTagsAction->run($photo);
+        $deletedTags = $this->deleteTagsAction->run($photo);
 
         $photo->delete();
 
@@ -166,7 +164,7 @@ class AdminController extends Controller
 
         $this->updateLeaderboardsAction->run($user, $photo);
 
-        return redirect()->back();
+        return ['success' => true];
     }
 
     /**

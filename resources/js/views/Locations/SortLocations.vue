@@ -1,5 +1,5 @@
 <template>
-    <section class="locations-main" :class="container">
+    <section class="inner-locations-container" :class="container">
 
         <div class="columns py-4 px-4">
             <div class="column is-half is-offset-3">
@@ -23,10 +23,10 @@
         		<div class="columns">
 
 					<!-- Location Metadata -->
-					<location-metadata
+					<LocationMetadata
 						:index="index"
 						:location="location"
-						:type="type"
+						:locationType="locationType"
 						:category="category"
 					/>
 
@@ -40,7 +40,7 @@
 							<!-- Components within Tabs -->
 							<a v-for="(tab, idx) in tabs"
 								:key="idx" v-show="showTab(tab.in_location)"
-								@click="loadTab(index, tab.component)"
+								@click="loadTab(tab.component)"
 								:class="tabClass(tab)">
 								{{ tab.title }}
 							</a>
@@ -56,15 +56,13 @@
 							:time="location.time"
 							@dateschanged="updateUrl"
 							:index="index"
-							:type="type"
+							:locationType="locationType"
 							:locationId="location.id"
 						/>
 					</div>
 				</div>
 			</div>
-
 		</section>
-
     </section>
 </template>
 
@@ -79,9 +77,8 @@ import Leaderboard from '../../components/Locations/Charts/Leaderboard/Leaderboa
 import Options from '../../components/Locations/Charts/Options/Options'
 import Download from '../../components/Locations/Charts/Download/Download'
 
-
 export default {
-	props: ['type'], // country, state, or city
+	props: ['locationType'],
 	name: 'SortLocations',
 	components: {
 		LocationNavbar,
@@ -92,8 +89,7 @@ export default {
         Options,
         Download
 	},
-	data ()
-	{
+	data () {
 		return {
 			'category': this.$t('location.most-data'),
 			tab: '',
@@ -107,13 +103,14 @@ export default {
 		};
 	},
     computed: {
-
 		/**
          * Expand container to fullscreen when orderedBy is empty/loading
          */
 	    container ()
         {
-            return this.orderedBy.length === 0 ? 'vh65' : '';
+            return (this.orderedBy.length === 0)
+                ? 'vh65'
+                : '';
         },
 
 		/**
@@ -126,7 +123,8 @@ export default {
 
 		/**
 		 * We can sort all locations A-Z, Most Open Data, or Most Open Data Per Person
-		 * We can add new options too, created_at, etc.
+         *
+		 * Todo: add new options: created_at, etc.
 		 */
 		orderedBy ()
 		{
@@ -145,7 +143,7 @@ export default {
 		},
 
 		/**
-		 * Countries, States, or Cities
+		 * Array of Countries, States, or Cities
 		 */
 		locations ()
 		{
@@ -153,11 +151,10 @@ export default {
 		}
 	},
 	methods: {
-
 		/**
-		* Load a tab component Litter, Leaderboard, Time-series
-		*/
-		loadTab (index, tab)
+		 * Load a tab component: Litter, Leaderboard, Time-series
+		 */
+		loadTab (tab)
 		{
 			this.tab = tab;
 		},
@@ -167,19 +164,23 @@ export default {
 		 */
 		tabClass (tab)
 		{
-			return tab === this.tab ? 'l-tab is-active' : 'l-tab';
+			return (tab === this.tab)
+                ? 'l-tab is-active'
+                : 'l-tab';
 		},
 
 		/**
-		 * Show tab depending on location type
+		 * Show tab depending on location locationType
+         *
+         * @return boolean
 		 */
 		showTab (tab)
 		{
-			return (tab === 'all' || this.type === tab); // this will return true or false
+			return (tab === 'all' || this.locationType === tab);
 		},
 
 		/**
-		 *
+		 * todo?
 		 */
 		updateUrl (url)
 		{
@@ -187,8 +188,8 @@ export default {
 		},
 
 		/**
-		* Update selected category from LocationNavBar component
-		*/
+		 * Update selected category from LocationNavBar component
+		 */
 		updateCategory (updatedCategory)
 		{
 			this.category = updatedCategory
@@ -199,10 +200,9 @@ export default {
 
 <style lang="scss" scoped>
 
-	.locations-main {
-		background-color: #23d160;
-		min-height: 100%;background-color: #23d160;
-		min-height: 100%;
+	.inner-locations-container {
+        flex: 1;
+        background-color: #23d160;
 	}
 
 	.l-tab.is-active {
@@ -210,11 +210,10 @@ export default {
 	}
 
 	.h65pc {
-			height: 65%;
-		}
+        height: 65%;
+    }
 
 	.world-cup-title {
 		color: #34495e;
-
 	}
 </style>
