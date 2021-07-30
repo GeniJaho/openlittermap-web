@@ -62,6 +62,7 @@ class User extends Authenticatable
         'username',
         'plan',
         'xp',
+        'total_images',
         'level',
         'show_name',
         'show_username',
