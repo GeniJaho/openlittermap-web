@@ -89,8 +89,6 @@ export const actions = {
     {
         await axios.get('/current-user')
         .then(response => {
-            console.log('get_current_user', response);
-
             context.commit('initUser', response.data);
             context.commit('set_default_litter_presence', response.data.items_remaining);
         })
@@ -124,8 +122,6 @@ export const actions = {
     {
         await axios.get('/user/profile/index')
             .then(response => {
-                console.log('get_users_position', response);
-
                 context.commit('usersPosition', response.data);
             })
             .catch(error => {
@@ -146,8 +142,6 @@ export const actions = {
             }
         })
         .then(response => {
-            console.log('get_users_profile_map_data', response);
-
             context.commit('usersGeojson', response.data.geojson);
         })
         .catch(error => {

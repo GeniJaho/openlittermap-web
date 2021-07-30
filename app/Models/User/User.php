@@ -107,7 +107,7 @@ class User extends Authenticatable
         'show_username' => 'boolean'
     ];
 
-    protected $appends = ['total_categories'];
+    protected $appends = ['total_categories', 'total_tags', 'total_brands_redis'];
 
     /**
      * Get total categories attribute
@@ -129,6 +129,29 @@ class User extends Authenticatable
         }
 
         return $totals;
+    }
+
+    /**
+     * Get total tags attribute
+     *
+     * @return int total number of tags
+     */
+    public function getTotalTagsAttribute ()
+    {
+        $totalBrands = (int) Redis::hget("user:{$this->id}", 'total_brands');
+        $totalLitter = (int) Redis::hget("user:{$this->id}", 'total_litter');
+
+        return $totalLitter + $totalBrands;
+    }
+
+    /**
+     * Get total brand tags from Redis
+     *
+     * @return int total number of brand tags
+     */
+    public function getTotalBrandsRedisAttribute ()
+    {
+        return (int) Redis::hget("user:{$this->id}", 'total_brands');
     }
 
     /**
