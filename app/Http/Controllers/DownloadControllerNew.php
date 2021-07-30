@@ -69,7 +69,7 @@ class DownloadControllerNew extends Controller
             }
             else
             {
-                $path = $year.'/'.$month.'/'.$day.'/' . 'Global_OpenLitterMap.csv';
+                $path = $year.'/'.$month.'/' . 'Global_OpenLitterMap.csv';
             }
 
             $this->export($request->type, $location_id, $path, $email);
@@ -86,6 +86,9 @@ class DownloadControllerNew extends Controller
     }
 
     /**
+     * Sends an email to the user containing a link to the csv file
+     * If the file doesn't exist, dispatch a job to create it
+     *
      * @param string $type
      * @param int $locationId
      * @param string $path

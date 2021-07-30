@@ -3,7 +3,7 @@
 
         <div class="columns py-4 px-4">
             <div class="column is-half is-offset-3">
-                <Download type="worldwide"/>
+                <Download type="global"/>
             </div>
         </div>
 
