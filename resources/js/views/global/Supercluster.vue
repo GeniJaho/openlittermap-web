@@ -227,6 +227,7 @@ function getActiveLayers ()
 
 export default {
     name: 'Supercluster',
+    props: ['geojsonData', 'geojsonArtData'],
     components: {
         LiveEvents
     },
@@ -263,14 +264,14 @@ export default {
             onEachFeature: onEachFeature,
         }).addTo(map);
 
-        clusters.addData(this.$store.state.globalmap.geojson.features);
+        clusters.addData(this.geojsonData);
 
         litterArtPoints = L.geoJSON(null, {
             pointToLayer: createArtIcon,
             onEachFeature: onEachArtFeature
         });
 
-        litterArtPoints.addData(this.$store.state.globalmap.artData.features);
+        litterArtPoints.addData(this.geojsonArtData);
 
         map.on('moveend', this.update);
 

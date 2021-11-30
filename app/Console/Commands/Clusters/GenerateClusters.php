@@ -53,14 +53,55 @@ class GenerateClusters extends Command
         // begin timer
         $start = microtime(true);
 
+        $photos = $this->getPhotos();
+
+        $features = $this->getFeatures($photos);
+
+        $this->storeFeatures($features);
+
+        $prefix = $this->getPrefix();
+
+        $this->createClusters($prefix);
+
+        $finish = microtime(true);
+        echo "Total Time: " . ($finish - $start) . "\n";
+    }
+
+    /**
+     * @return \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed|string
+     */
+    protected function getPrefix()
+    {
+        if (app()->environment() === 'local') {
+            $prefix = config('app.root_dir');
+        } else if (app()->environment() === 'staging') {
+            $prefix = '/home/forge/olmdev.online';
+        } else {
+            $prefix = '/home/forge/openlittermap.com';
+        }
+        return $prefix;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getPhotos()
+    {
         $photos = Photo::select('lat', 'lon')->get();
 
         echo "Number of photos: " . number_format(count($photos)) . "\n";
+        return $photos;
+    }
 
+    /**
+     * @param $photos
+     * @return false|string
+     */
+    protected function getFeatures($photos)
+    {
         $features = [];
 
-        foreach ($photos as $photo)
-        {
+        foreach ($photos as $photo) {
             $feature = [
                 'type' => 'Feature',
                 'geometry' => [
@@ -75,42 +116,39 @@ class GenerateClusters extends Command
         unset($photos); // free up memory
 
         $features = json_encode($features, JSON_NUMERIC_CHECK);
+        return $features;
+    }
 
+    /**
+     * @param $features
+     */
+    protected function storeFeatures($features): void
+    {
         Storage::put('/data/features.json', $features);
+    }
 
-        if (app()->environment() === 'local')
-        {
-            $prefix = config('app.root_dir');
-        }
-        else if (app()->environment() === 'staging')
-        {
-            $prefix = '/home/forge/olmdev.online';
-        }
-        else
-        {
-            $prefix = '/home/forge/openlittermap.com';
-        }
-
-        // delete all clusters?
+    /**
+     * @param $prefix
+     */
+    protected function createClusters($prefix): void
+    {
+// delete all clusters?
         // Or update existing ones?
 
         Cluster::truncate();
 
         // Put "recompiling data" onto Global Map
 
-        $zoomLevels = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+        $zoomLevels = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
-        foreach ($zoomLevels as $zoomLevel)
-        {
+        foreach ($zoomLevels as $zoomLevel) {
             echo "Zoom level " . $zoomLevel . " \n";
             exec('node app/Node/supercluster-php ' . $prefix . ' ' . $zoomLevel);
 
             $clusters = json_decode(Storage::get('/data/clusters.json'));
 
-            foreach ($clusters as $cluster)
-            {
-                if (isset($cluster->properties))
-                {
+            foreach ($clusters as $cluster) {
+                if (isset($cluster->properties)) {
                     Cluster::create([
                         'lat' => $cluster->geometry->coordinates[1],
                         'lon' => $cluster->geometry->coordinates[0],
@@ -122,11 +160,5 @@ class GenerateClusters extends Command
                 }
             }
         }
-
-        // Remove "compiling data" from global map
-
-        // end timer
-        $finish = microtime(true);
-        echo "Total Time: " . ($finish - $start) . "\n";
     }
 }

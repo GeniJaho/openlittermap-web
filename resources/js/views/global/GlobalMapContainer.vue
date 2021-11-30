@@ -3,7 +3,7 @@
 
         <loading v-if="loading" :active.sync="loading" :is-full-page="true" />
 
-        <supercluster v-else />
+        <supercluster v-else :geojson-data="geojsonData" :geojson-art-data="geojsonArtData"/>
 
     </div>
 </template>
@@ -44,6 +44,22 @@ export default {
         loading ()
         {
             return this.$store.state.globalmap.loading;
+        },
+
+        /**
+         * Features data passed into Supercluster
+         */
+        geojsonData()
+        {
+            return this.$store.state.globalmap.geojson.features;
+        },
+
+        /**
+         * Features data passed into Supercluster
+         */
+        geojsonArtData()
+        {
+            return this.$store.state.globalmap.artData.features;
         },
 
         /**
