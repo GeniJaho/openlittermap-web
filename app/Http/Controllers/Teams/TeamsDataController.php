@@ -72,7 +72,7 @@ class TeamsDataController extends Controller
             'photos_count' => $photosCount,
             'litter_count' => $litterCount,
             'members_count' => $membersCount,
-            'geojson' => $geojson
+            'geojson' => array_slice($geojson, 0, 4)
         ];
     }
 
