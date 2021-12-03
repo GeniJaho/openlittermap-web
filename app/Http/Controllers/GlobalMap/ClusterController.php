@@ -22,13 +22,17 @@ class ClusterController extends Controller
         // If the zoom is greater than 5, we want to filter clusters by geohash
         if (request()->zoom > 5)
         {
-            $clusters = $this->filterClustersByGeoHash(request()->zoom, request()->bbox)->get();
+            $clusters = $this
+                ->filterClustersByGeoHash(request()->zoom, request()->bbox)
+                ->whereNull('clusterable_id')
+                ->get();
         }
         else
         {
             // If the zoom is 2,3,4 -> get all clusters for this zoom level
             $clusters = Cluster::where([
-                'zoom' => request()->zoom
+                'zoom' => request()->zoom,
+                'clusterable_id' => null
             ])->get();
         }
 
