@@ -345,39 +345,7 @@ export default {
                         layers
                     }
                 })
-                .then(response => {
-                    console.log('get_global_points', response);
-
-                    // Clear layer if prev layer is cluster.
-                    if (prevZoom < CLUSTER_ZOOM_THRESHOLD)
-                    {
-                        clusters.clearLayers();
-                    }
-
-                    const data = response.data.features.map(feature => {
-                        return [feature.geometry.coordinates[0], feature.geometry.coordinates[1]];
-                    });
-
-                    // New way using webGL
-                    points = glify.points({
-                        map,
-                        data,
-                        size: 10,
-                        color: { r: 0.054, g: 0.819, b: 0.27, a: 1 }, // 14, 209, 69 / 255
-                        click:  (e, point, xy) => {
-                            const feature = response.data.features.find(f => {
-                                return f.geometry.coordinates[0] === point[0]
-                                    && f.geometry.coordinates[1] === point[1];
-                            });
-
-                            if (!feature) {
-                                return;
-                            }
-
-                            return this.renderLeafletPopup(feature, e.latlng)
-                        },
-                    });
-                })
+                .then(this.getPoints)
                 .catch(error => {
                     console.error('get_global_points', error);
                 });
@@ -408,7 +376,46 @@ export default {
                     )
                 )
                 .openOn(map);
-        }
+        },
+
+        getPoints (response) {
+            console.log('get_global_points', response);
+
+            // Clear layer if prev layer is cluster.
+            if (prevZoom < CLUSTER_ZOOM_THRESHOLD)
+            {
+                clusters.clearLayers();
+            }
+
+            const data = response.data.features.map(feature =>
+            {
+                return [feature.geometry.coordinates[0], feature.geometry.coordinates[1]];
+            });
+
+            // New way using webGL
+            points = glify.points({
+                map,
+                data,
+                size: 10,
+                color: {r: 0.054, g: 0.819, b: 0.27, a: 1}, // 14, 209, 69 / 255
+                click: (e, point, xy) =>
+                {
+                    const feature = response.data.features.find(f =>
+                    {
+                        return f.geometry.coordinates[0] === point[0]
+                            && f.geometry.coordinates[1] === point[1];
+                    });
+
+                    if (!feature)
+                    {
+                        return;
+                    }
+
+                    return this.renderLeafletPopup(feature, e.latlng)
+                },
+            });
+        },
+
     }
 };
 </script>
