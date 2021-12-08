@@ -45,7 +45,10 @@ class GenerateTeamClusters extends Command
                 'created_at' => now()->toDateString()
             ])->delete();
 
-            $photos = Photo::select('lat', 'lon')->where(['team_id' => $team->id])->get();
+            $photos = Photo::query()
+                ->select('lat', 'lon')
+                ->where(['team_id' => $team->id])
+                ->cursor();
 
             $features = $photos->map(function ($photo) {
                 return [

@@ -77,11 +77,15 @@ class GenerateDummyPhotos extends Command
 
         $photosToGen = $this->argument('photos');
 
+        $bar = $this->output->createProgressBar($photosToGen);
+        $bar->start();
+
         for($i=0;$i<$photosToGen;$i++) {
             $lat = rand(51.85391800*100000000, 51.92249800*100000000) / 100000000;
             $lon = rand(-8.53209200*100000000, -8.36823900*100000000) / 100000000;
 
             Photo::create([
+                'team_id' => 1,
                 'total_litter' => 5,
                 'user_id' => $dummyId,
                 'country_id' => $irelandId,
@@ -96,6 +100,12 @@ class GenerateDummyPhotos extends Command
                 'remaining' => 1,
                 'geohash' => \GeoHash::encode($lat, $lon),
             ]);
+
+            $bar->advance();
         }
+
+        $bar->finish();
+
+        return 0;
     }
 }
