@@ -12,9 +12,13 @@ export default {
     components: {
         Supercluster
     },
-    created ()
+    async created ()
     {
         this.attribution += new Date().getFullYear();
+        await this.$store.dispatch('GET_CLUSTERS', {
+            zoom: 2,
+            team_id: 1
+        });
     },
     computed: {
 
@@ -24,7 +28,7 @@ export default {
         geojson ()
         {
             return this.$store.state.teams.geojson
-                ? this.$store.state.teams.geojson.features
+                ? this.$store.state.teams.geojson
                 : [];
         }
     },

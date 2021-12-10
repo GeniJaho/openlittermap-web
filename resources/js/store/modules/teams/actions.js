@@ -310,6 +310,27 @@ export const actions = {
     },
 
     /**
+     * Get clusters for the teams map
+     */
+    async GET_CLUSTERS (context, payload)
+    {
+        await axios.get('/teams/clusters', {
+            params: {
+                zoom: payload.zoom,
+                team_id: payload.team_id
+            }
+        })
+            .then(response => {
+                console.log('get_clusters', response);
+
+                context.commit('teamMap', response.data);
+            })
+            .catch(error => {
+                console.error('get_clusters', error);
+            });
+    },
+
+    /**
      * The user wants to join a team with an identifier
      *
      * Not to be confused with change active team.

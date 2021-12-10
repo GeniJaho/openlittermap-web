@@ -43,7 +43,7 @@ class TeamsDataController extends Controller
             'features' => []
         ];
 
-        $photos = $query->get();
+        $photos = $query->take(1000)->get();
 
         // Populate geojson object
         foreach ($photos as $photo)
