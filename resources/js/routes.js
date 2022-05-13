@@ -58,6 +58,10 @@ const router = new VueRouter({
             component: require('./views/global/GlobalMapContainer').default
         },
         {
+            path: '/certificates',
+            component: require('./views/home/Certificate').default
+        },
+        {
             path: '/signup',
             component: require('./views/Auth/SignUp').default
         },
